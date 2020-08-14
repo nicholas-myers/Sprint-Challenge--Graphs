@@ -81,6 +81,7 @@ def get_path(starting_room):
     # queue.remove(cur_room.name)
     while len(visited) != total:
         shortest_path = []
+        
         dirs = cur_room.get_exits()
         open_dirs = []       
         # print(open_dirs)
@@ -93,7 +94,10 @@ def get_path(starting_room):
             if rname not in visited and rname not in queue:
                 open_dirs.append(d)
                 queue.append(rname)
-                
+        if len(open_dirs) == 0 and cur_room.name in queue:
+            for q in queue:
+                if cur_room.name == q:
+                    queue.remove(q)
         if len(open_dirs) > 0:
             ran_dir = random.randint(1, len(open_dirs)) - 1
             # move in that direction
@@ -101,24 +105,13 @@ def get_path(starting_room):
             # add that to the traversal path
             traversal_path.append(open_dirs[ran_dir])
             cur_room = player.current_room
-        else:
-            # if the len of open paths is 0
+        if len(open_dirs) == 0:
             if len(queue) > 0:
                 shortest_path = rg.bfs(cur_room.name, queue[-1])
-            # print(shortest_path)
-            if len(queue) > 0:
-                queue.remove(queue[-1])
-            else:
-                for r in rooms:
-                    if r not in visited:
-                        shortest_path = rg.bfs(cur_room.name, r)
-            # print(queue)
-            # travel until we get to destination
-            # print(rg.vertices)
+            # create a list of all the connected shortest paths
             spaths = []
             count = 0
             for index, p in enumerate(shortest_path):
-        
                 if count < len(shortest_path) - 1:
                     # print([shortest_path[count], shortest_path[count + 1]])
                     spaths.append([shortest_path[count], shortest_path[count + 1]])
@@ -134,6 +127,12 @@ def get_path(starting_room):
             for d in spath_dirs:
                 player.travel(d)
                 traversal_path.append(d)
+                temp_room = player.current_room
+                temp_dirs = temp_room.get_exits()
+                for t in temp_dirs:
+                    rname = temp_room.get_room_in_direction(t).name
+                    if rname not in visited and rname not in queue:
+                        queue.append(rname)
             cur_room = player.current_room
             
 
@@ -159,12 +158,12 @@ else:
 #######
 # UNCOMMENT TO WALK AROUND
 #######
-player.current_room.print_room_description(player)
-while True:
-    cmds = input("-> ").lower().split(" ")
-    if cmds[0] in ["n", "s", "e", "w"]:
-        player.travel(cmds[0], True)
-    elif cmds[0] == "q":
-        break
-    else:
-        print("I did not understand that command.")
+# player.current_room.print_room_description(player)
+# while True:
+#     cmds = input("-> ").lower().split(" ")
+#     if cmds[0] in ["n", "s", "e", "w"]:
+#         player.travel(cmds[0], True)
+#     elif cmds[0] == "q":
+#         break
+#     else:
+#         print("I did not understand that command.")
