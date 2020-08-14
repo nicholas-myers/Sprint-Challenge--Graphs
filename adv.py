@@ -15,8 +15,8 @@ world = World()
 # map_file = "maps/test_line.txt"
 # map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
-map_file = "maps/test_loop_fork.txt"
-# map_file = "maps/main_maze.txt"
+# map_file = "maps/test_loop_fork.txt"
+map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
 room_graph=literal_eval(open(map_file, "r").read())
@@ -109,16 +109,18 @@ def get_path(starting_room):
         #             rname = cur_room.get_room_in_direction(d).name
         #             if rname in queue:
         #                 open_dirs.remove(d)
+        #     shortest_path = []
         if len(open_dirs) > 0 and cur_room.name not in queue:
             queue.append(cur_room.name)
-        for d in open_dirs:
-            rname = cur_room.get_room_in_direction(d).name
-            if rname in queue:
-                open_dirs.remove(d)
         if len(open_dirs) == 0 and cur_room.name in queue:
             for q in queue:
                 if cur_room.name == q:
                     queue.remove(q)
+        for d in open_dirs:
+            rname = cur_room.get_room_in_direction(d).name
+            if rname in queue:
+                open_dirs.remove(d)
+        
         if len(open_dirs) > 0:
             ran_dir = random.randint(1, len(open_dirs)) - 1
             # move in that direction
@@ -128,6 +130,7 @@ def get_path(starting_room):
             cur_room = player.current_room
             open_paths[cur_room.name] = open_dirs
         if len(open_dirs) == 0:
+            # print(queue)
             if len(queue) > 0:
                 shortest_path = rg.bfs(cur_room.name, queue[-1])
             # create a list of all the connected shortest paths
@@ -154,7 +157,7 @@ def get_path(starting_room):
                 # for t in temp_dirs:
                 #     rname = temp_room.get_room_in_direction(t).name
                 #     if rname not in visited and rname not in queue:
-                #         queue.append(rname)
+                #         queue.insert(0, rname)
         
             cur_room = player.current_room
             
